@@ -31,8 +31,8 @@ DrawScence::DrawScence(LPDIRECT3DDEVICE9 pD3DDevice,HWND hWnd)
 	m_sudokuTexPlan->SetTexture("pic\\back.bmp",0);
 	m_sudokuTexPlan->SetTexture("pic\\back.bmp",1);
 	
-	sprite = new Sprite(m_pD3DDevice);
-	sprite->m_font = sprite->MakeFont("Arial Bold",30);
+	//文字精灵对象的创建
+	textSprite = new Sprite(m_pD3DDevice);
 }
 
 
@@ -86,13 +86,10 @@ void DrawScence::ProjCoorTransform()
 	m_clickPointProj.y = (((-2.0f * m_clickPoint.y)/vp.Height) + 1.0f)/mProj(1,1);;
 	m_clickPointProj.z = 1;
 
-	/*
+	
 	CString str;
 	str.AppendFormat("%f,%f",m_movePointProj.x,m_movePointProj.y);
-	sprite->spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
-	sprite->FontPrint(sprite->m_font,100,300,str.GetString());
-	sprite->spriteobj->End();
-	*/
+	textSprite->PrintText(str.GetString(),100,200);
 }
 
 bool DrawScence::isPointInPlane(Plane *plane)
@@ -105,15 +102,15 @@ bool DrawScence::isPointInPlane(Plane *plane)
 			(m_clickPointProj.y * fabs(m_Camera.g_vPos.z) < plane->m_planeData.anchorPoint.y + plane->m_planeData.height)
 			)
 		{
+			/*
 			CString str;
 			str.AppendFormat("m_movePointProj\nx:%f\ny:%f\n",m_movePointProj.x,m_movePointProj.y);
 			str.AppendFormat("m_planeData.anchorPoint:\nx:%d\ny:%d\n",plane->m_planeData.anchorPoint.x,plane->m_planeData.anchorPoint.y);
 			str.AppendFormat("m_planeData:\nwidth:%f\nheight:%f",plane->m_planeData.width,plane->m_planeData.height);
-			sprite->spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
-			sprite->FontPrint(sprite->m_font,100,300,str.GetString());
-			sprite->spriteobj->End();
+			textSprite->PrintText(str.GetString(),100,200);
 			Beep(2000,200);
 			return true;
+			*/
 		}
 	}
 
@@ -129,9 +126,7 @@ void DrawScence::Render(CPoint movePoint,CPoint clickPoint)
 
 	CString str;
 	str.AppendFormat("%d,%d",m_movePoint.x,m_movePoint.y);
-	sprite->spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
-	sprite->FontPrint(sprite->m_font,100,100,str.GetString());
-	sprite->spriteobj->End();
+	textSprite->PrintText(str.GetString(),100,100);
 
 
 	SetWorldMatrix();

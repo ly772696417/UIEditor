@@ -11,12 +11,54 @@ Sprite::Sprite(LPDIRECT3DDEVICE9 pD3DDevice)
 
 Sprite::~Sprite(void)
 {
-	m_pD3DDevice->Release();
-	m_pD3DDevice = NULL;
+}
+
+void Sprite::PrintText(string text,int x,int y,string font /* = "Arial Bold" */,int fontSize /* = 30 */,D3DCOLOR color /* = D3DCOLOR_XRGB */)
+{
+	m_font = this->MakeFont(font,fontSize);
+
+	spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
+	this->FontPrint(m_font,x,y,text);
+	spriteobj->End();
+}
+
+
+LPD3DXFONT Sprite::MakeFont(string name,int size)
+{
+	LPD3DXFONT font = NULL;
+
+	D3DXFONT_DESC desc = {
+		size,                   //height
+		0,                      //width
+		0,                      //weight
+		0,                      //miplevels
+		false,                  //italic
+		DEFAULT_CHARSET,        //charset
+		OUT_TT_PRECIS,          //output precision
+		CLIP_DEFAULT_PRECIS,    //quality
+		DEFAULT_PITCH,          //pitch and family
+		""                      //font name
+	};
+
+	strcpy_s(desc.FaceName, name.c_str());
+
+	D3DXCreateFontIndirect(m_pD3DDevice, &desc, &font);
+
+	return font;
+}
+
+void Sprite::FontPrint(LPD3DXFONT font, int x, int y, string text, D3DCOLOR color)
+{
+	//figure out the text boundary
+	RECT rect = { x, y, 0, 0 };
+	font->DrawText( NULL, text.c_str(), text.length(), &rect, DT_CALCRECT, color); 
+
+	//print the text
+	font->DrawText(spriteobj, text.c_str(), text.length(), &rect, DT_LEFT, color); 
 }
 
 void Sprite:: Sprite_Transform_Draw(LPDIRECT3DTEXTURE9 image, int x, int y, int width, int height, 
-										int frame, int columns, float rotation, float scaleW, float scaleH, D3DCOLOR color)
+									int frame, int columns, float rotation, float scaleW, float scaleH, D3DCOLOR color)
 {
 	//create a scale vector
 	D3DXVECTOR2 scale( scaleW, scaleH );
@@ -78,38 +120,4 @@ LPDIRECT3DTEXTURE9 Sprite::LoadTexture(string filename, D3DCOLOR transcolor)
 	if (result != D3D_OK) return NULL;
 
 	return texture;
-}
-
-LPD3DXFONT Sprite::MakeFont(string name,int size)
-{
-	LPD3DXFONT font = NULL;
-
-	D3DXFONT_DESC desc = {
-		size,                   //height
-		0,                      //width
-		0,                      //weight
-		0,                      //miplevels
-		false,                  //italic
-		DEFAULT_CHARSET,        //charset
-		OUT_TT_PRECIS,          //output precision
-		CLIP_DEFAULT_PRECIS,    //quality
-		DEFAULT_PITCH,          //pitch and family
-		""                      //font name
-	};
-
-	strcpy_s(desc.FaceName, name.c_str());
-
-	D3DXCreateFontIndirect(m_pD3DDevice, &desc, &font);
-
-	return font;
-}
-
-void Sprite::FontPrint(LPD3DXFONT font, int x, int y, string text, D3DCOLOR color)
-{
-	//figure out the text boundary
-	RECT rect = { x, y, 0, 0 };
-	font->DrawText( NULL, text.c_str(), text.length(), &rect, DT_CALCRECT, color); 
-
-	//print the text
-	font->DrawText(spriteobj, text.c_str(), text.length(), &rect, DT_LEFT, color); 
 }

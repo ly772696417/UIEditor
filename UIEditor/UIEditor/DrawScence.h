@@ -40,6 +40,6 @@ private:
 	Plane *m_backgrTexPlan;
 	Plane *m_sudokuTexPlan;
 
-	Sprite *sprite;
+	Sprite *textSprite;
 };
 
