@@ -28,7 +28,9 @@ typedef struct PlaneData
 
 	PlaneData& operator=(const PlaneData& rhs)
 	{
-		anchorPoint = rhs.anchorPoint;
+		//anchorPoint = rhs.anchorPoint;
+		anchorPoint.x = rhs.anchorPoint.x;
+		anchorPoint.y = rhs.anchorPoint.y;
 		width = rhs.width;
 		height = rhs.height;
 		alpha = rhs.alpha;

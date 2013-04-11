@@ -30,9 +30,9 @@ DrawScence::DrawScence(LPDIRECT3DDEVICE9 pD3DDevice,HWND hWnd)
 	m_sudokuTexPlan->InitVB();
 	m_sudokuTexPlan->SetTexture("pic\\back.bmp",0);
 	m_sudokuTexPlan->SetTexture("pic\\back.bmp",1);
-
-	//g_tea = NULL;
-	//D3DXCreateTeapot(m_pD3DDevice,&g_tea,NULL);
+	
+	sprite = new Sprite(m_pD3DDevice);
+	sprite->m_font = sprite->MakeFont("Arial Bold",30);
 }
 
 
@@ -85,18 +85,33 @@ void DrawScence::ProjCoorTransform()
 	m_clickPointProj.x = (((2.0f * m_clickPoint.x)/vp.Width) - 1.0f)/mProj(0,0);
 	m_clickPointProj.y = (((-2.0f * m_clickPoint.y)/vp.Height) + 1.0f)/mProj(1,1);;
 	m_clickPointProj.z = 1;
+
+	/*
+	CString str;
+	str.AppendFormat("%f,%f",m_movePointProj.x,m_movePointProj.y);
+	sprite->spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
+	sprite->FontPrint(sprite->m_font,100,300,str.GetString());
+	sprite->spriteobj->End();
+	*/
 }
 
 bool DrawScence::isPointInPlane(Plane *plane)
 {
 	if (m_clickPoint.x != -1)
 	{
-		if ((m_clickPointProj.x > plane->m_planeData.anchorPoint.x) &&
-			(m_clickPointProj.x < plane->m_planeData.anchorPoint.x + plane->m_planeData.width) &&
-			(m_clickPointProj.y > plane->m_planeData.anchorPoint.y) &&
-			(m_clickPointProj.y < plane->m_planeData.anchorPoint.y + plane->m_planeData.height)
+		if ((m_clickPointProj.x * fabs(m_Camera.g_vPos.z) > plane->m_planeData.anchorPoint.x) &&
+			(m_clickPointProj.x * fabs(m_Camera.g_vPos.z) < plane->m_planeData.anchorPoint.x + plane->m_planeData.width) &&
+			(m_clickPointProj.y * fabs(m_Camera.g_vPos.z) > plane->m_planeData.anchorPoint.y) &&
+			(m_clickPointProj.y * fabs(m_Camera.g_vPos.z) < plane->m_planeData.anchorPoint.y + plane->m_planeData.height)
 			)
 		{
+			CString str;
+			str.AppendFormat("m_movePointProj\nx:%f\ny:%f\n",m_movePointProj.x,m_movePointProj.y);
+			str.AppendFormat("m_planeData.anchorPoint:\nx:%d\ny:%d\n",plane->m_planeData.anchorPoint.x,plane->m_planeData.anchorPoint.y);
+			str.AppendFormat("m_planeData:\nwidth:%f\nheight:%f",plane->m_planeData.width,plane->m_planeData.height);
+			sprite->spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
+			sprite->FontPrint(sprite->m_font,100,300,str.GetString());
+			sprite->spriteobj->End();
 			Beep(2000,200);
 			return true;
 		}
@@ -110,6 +125,14 @@ void DrawScence::Render(CPoint movePoint,CPoint clickPoint)
 {
 	m_clickPoint = clickPoint;
 	m_movePoint = movePoint;
+
+
+	CString str;
+	str.AppendFormat("%d,%d",m_movePoint.x,m_movePoint.y);
+	sprite->spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
+	sprite->FontPrint(sprite->m_font,100,100,str.GetString());
+	sprite->spriteobj->End();
+
 
 	SetWorldMatrix();
 	SetViewProjectionMatrix();
@@ -129,6 +152,4 @@ void DrawScence::Render(CPoint movePoint,CPoint clickPoint)
 	m_sudokuTexPlan->Render();
 
 	isPointInPlane(m_sudokuTexPlan);
-
-	//g_tea->DrawSubset(0);
 }

@@ -57,6 +57,9 @@
     <ClInclude Include="Plane.h">
       <Filter>D3D</Filter>
     </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>D3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UIEditor.cpp">
@@ -84,6 +87,9 @@
       <Filter>D3D</Filter>
     </ClCompile>
     <ClCompile Include="Plane.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
   </ItemGroup>

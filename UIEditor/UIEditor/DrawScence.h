@@ -4,6 +4,10 @@
 #include "Camera.h"
 #include "Plane.h"
 
+#include "Sprite.h"
+
+#include <cstdlib>
+
 typedef struct PointToProj
 {
 	float x;
@@ -36,6 +40,6 @@ private:
 	Plane *m_backgrTexPlan;
 	Plane *m_sudokuTexPlan;
 
-	//LPD3DXMESH g_tea;
+	Sprite *sprite;
 };
 
