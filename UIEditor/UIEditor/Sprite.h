@@ -13,6 +13,7 @@ public:
 	~Sprite(void);
 
 	void PrintText(string text,int x,int y,string font = "Arial Bold",int fontSize = 30,D3DCOLOR color = D3DCOLOR_XRGB(0,255,0));
+	void PrintSprite(string filename,int x,int y,int width,int height,D3DCOLOR transcolor);
 
 private:
 	LPDIRECT3DDEVICE9 m_pD3DDevice;
@@ -29,7 +30,7 @@ private:
 	LPDIRECT3DTEXTURE9 m_texture;
 	LPDIRECT3DTEXTURE9 LoadTexture(string filename, D3DCOLOR transcolor);
 	void Sprite_Transform_Draw(LPDIRECT3DTEXTURE9 image, int x, int y, int width, int height, 
-		int frame, int columns, float rotation, float scaleW, float scaleH, D3DCOLOR color);
+		int frame = 0, int columns = 1, float rotation = 0.0f, float scaleW = 1.0f, float scaleH = 1.0f, D3DCOLOR color = D3DCOLOR_XRGB(255,255,255));
 	
 };
 

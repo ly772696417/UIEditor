@@ -22,6 +22,14 @@ void Sprite::PrintText(string text,int x,int y,string font /* = "Arial Bold" */,
 	spriteobj->End();
 }
 
+void Sprite::PrintSprite(string filename,int x,int y,int width,int height,D3DCOLOR transcolor)
+{
+	m_texture = this->LoadTexture(filename,transcolor);
+	spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
+	this->Sprite_Transform_Draw(m_texture,x,y,width,height);
+	spriteobj->End();
+}
+
 
 LPD3DXFONT Sprite::MakeFont(string name,int size)
 {
@@ -57,8 +65,12 @@ void Sprite::FontPrint(LPD3DXFONT font, int x, int y, string text, D3DCOLOR colo
 	font->DrawText(spriteobj, text.c_str(), text.length(), &rect, DT_LEFT, color); 
 }
 
-void Sprite:: Sprite_Transform_Draw(LPDIRECT3DTEXTURE9 image, int x, int y, int width, int height, 
-									int frame, int columns, float rotation, float scaleW, float scaleH, D3DCOLOR color)
+void Sprite::Sprite_Transform_Draw(LPDIRECT3DTEXTURE9 image, 
+								   int x, int y, int width, int height, 
+								   int frame /* = 0 */, int columns /* = 1 */, 
+								   float rotation /* = 0.0f */, 
+								   float scaleW /* = 1.0f */, float scaleH /* = 1.0f */, 
+								   D3DCOLOR color /* = D3DCOLOR_XRGB */)
 {
 	//create a scale vector
 	D3DXVECTOR2 scale( scaleW, scaleH );
@@ -89,6 +101,7 @@ void Sprite:: Sprite_Transform_Draw(LPDIRECT3DTEXTURE9 image, int x, int y, int 
 	D3DXMatrixIdentity( &mat );
 	spriteobj->SetTransform( &mat );
 }
+
 
 LPDIRECT3DTEXTURE9 Sprite::LoadTexture(string filename, D3DCOLOR transcolor)
 {  

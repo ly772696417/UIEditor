@@ -19,20 +19,15 @@ DrawScence::DrawScence(LPDIRECT3DDEVICE9 pD3DDevice,HWND hWnd)
 	m_backgrTexPlan->SetTexture("pic\\back.bmp",0);
 	m_backgrTexPlan->SetTexture("pic\\back.bmp",1);
 
+	
 	//sudoku texture
-	PlaneData sudokuPlanData;
-	sudokuPlanData.alpha = 0.2f;
-	sudokuPlanData.anchorPoint = CPoint(-2.0f,-2.0f);
-	sudokuPlanData.height = 5.0f;
-	sudokuPlanData.width = 5.0f;
-
-	m_sudokuTexPlan = new Plane(m_pD3DDevice,m_hWnd,sudokuPlanData);
-	m_sudokuTexPlan->InitVB();
-	m_sudokuTexPlan->SetTexture("pic\\back.bmp",0);
-	m_sudokuTexPlan->SetTexture("pic\\back.bmp",1);
+	sudokuPlanData.alpha = 0.1f;
+	sudokuPlanData.anchorPoint = CPoint(200.0f,200.0f);
+	sudokuPlanData.height = 100.0f;
+	sudokuPlanData.width = 100.0f;
 	
 	//文字精灵对象的创建
-	textSprite = new Sprite(m_pD3DDevice);
+	m_sprite = new Sprite(m_pD3DDevice);
 }
 
 
@@ -89,11 +84,36 @@ void DrawScence::ProjCoorTransform()
 	
 	CString str;
 	str.AppendFormat("%f,%f",m_movePointProj.x,m_movePointProj.y);
-	textSprite->PrintText(str.GetString(),100,200);
+	m_sprite->PrintText(str.GetString(),100,200);
+
+	CString str1;
+	str1.AppendFormat("%d,%d",m_clickPoint.x,m_clickPoint.y);
+	m_sprite->PrintText(str1.GetString(),100,300);
 }
 
+bool DrawScence::IsPointInPlan(PlaneData planData)
+{
+	
+	if (m_clickPoint.x != -1 || m_clickPoint.y != -1)
+	{
+		if (planData.anchorPoint.x < m_movePoint.x && 
+			planData.anchorPoint.x + planData.width > m_movePoint.x && 
+			planData.anchorPoint.y < m_movePoint.y && 
+			planData.anchorPoint.y + planData.height > m_movePoint.y)
+		{
+			Beep(2000,200);
+			return true;
+		}
+	}
+	
+
+	return false;
+}
+
+/*
 bool DrawScence::isPointInPlane(Plane *plane)
 {
+	
 	if (m_clickPoint.x != -1)
 	{
 		if ((m_clickPointProj.x * fabs(m_Camera.g_vPos.z) > plane->m_planeData.anchorPoint.x) &&
@@ -102,21 +122,15 @@ bool DrawScence::isPointInPlane(Plane *plane)
 			(m_clickPointProj.y * fabs(m_Camera.g_vPos.z) < plane->m_planeData.anchorPoint.y + plane->m_planeData.height)
 			)
 		{
-			/*
-			CString str;
-			str.AppendFormat("m_movePointProj\nx:%f\ny:%f\n",m_movePointProj.x,m_movePointProj.y);
-			str.AppendFormat("m_planeData.anchorPoint:\nx:%d\ny:%d\n",plane->m_planeData.anchorPoint.x,plane->m_planeData.anchorPoint.y);
-			str.AppendFormat("m_planeData:\nwidth:%f\nheight:%f",plane->m_planeData.width,plane->m_planeData.height);
-			textSprite->PrintText(str.GetString(),100,200);
-			Beep(2000,200);
-			return true;
-			*/
+
 		}
+		
+
 	}
 
 	return false;
 }
-
+*/
 
 void DrawScence::Render(CPoint movePoint,CPoint clickPoint)
 {
@@ -126,13 +140,17 @@ void DrawScence::Render(CPoint movePoint,CPoint clickPoint)
 
 	CString str;
 	str.AppendFormat("%d,%d",m_movePoint.x,m_movePoint.y);
-	textSprite->PrintText(str.GetString(),100,100);
+	m_sprite->PrintText(str.GetString(),100,100);
+
+	m_sprite->PrintSprite("pic\\back.bmp",sudokuPlanData.anchorPoint.x,sudokuPlanData.anchorPoint.y,sudokuPlanData.width,sudokuPlanData.height,D3DCOLOR_XRGB(255,255,255));
 
 
 	SetWorldMatrix();
 	SetViewProjectionMatrix();
 
 	ProjCoorTransform();
+
+	IsPointInPlan(sudokuPlanData);
 
 	m_pD3DDevice->SetTextureStageState(0,D3DTSS_ALPHAARG1,D3DTA_DIFFUSE);
 
@@ -144,7 +162,7 @@ void DrawScence::Render(CPoint movePoint,CPoint clickPoint)
 	m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND,D3DBLEND_INVDESTALPHA);
 
 	m_backgrTexPlan->Render();
-	m_sudokuTexPlan->Render();
+	//m_sudokuTexPlan->Render();
 
-	isPointInPlane(m_sudokuTexPlan);
+	//isPointInPlane(m_sudokuTexPlan);
 }

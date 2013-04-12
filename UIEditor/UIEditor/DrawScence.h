@@ -25,8 +25,9 @@ public:
 	void SetViewProjectionMatrix();//设置投影矩阵
 	void ProjCoorTransform();//投影坐标转换
 
-	bool isPointInPlane(Plane *plane);
-
+	//bool isPointInPlane(Plane *plane);
+	bool IsPointInPlan(PlaneData planData);
+	
 	void Render(CPoint movePoint,CPoint clickPoint);
 
 private:
@@ -38,8 +39,9 @@ private:
 	PointToProj m_movePointProj,m_clickPointProj;
 
 	Plane *m_backgrTexPlan;
-	Plane *m_sudokuTexPlan;
 
-	Sprite *textSprite;
+	PlaneData sudokuPlanData;
+
+	Sprite *m_sprite;
 };
 
