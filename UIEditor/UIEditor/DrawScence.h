@@ -27,6 +27,8 @@ public:
 
 	//bool isPointInPlane(Plane *plane);
 	bool IsPointInPlan(PlaneData planData);
+	bool UpdateUVData();
+	void ScreenPointToProjPoint(CPoint point);
 	
 	void Render(CPoint movePoint,CPoint clickPoint);
 
@@ -43,5 +45,8 @@ private:
 	PlaneData sudokuPlanData;
 
 	Sprite *m_sprite;
+
+	CPoint m_lastPoint;
+	bool m_DragFlag;
 };
 

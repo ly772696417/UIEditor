@@ -10,9 +10,11 @@ DrawScence::DrawScence(LPDIRECT3DDEVICE9 pD3DDevice,HWND hWnd)
 	//background texture
 	PlaneData backPlanData;
 	backPlanData.alpha = 1.0f;
-	backPlanData.anchorPoint = CPoint(-5.0f,-5.0f);
+	backPlanData.anchorPoint = CPoint(-5.0f,5.0f);
 	backPlanData.height = 10.0f;
 	backPlanData.width = 10.0f;
+	backPlanData.offsetX = 0.0f;
+	backPlanData.offsetY = 0.0f;
 
 	m_backgrTexPlan = new Plane(m_pD3DDevice,m_hWnd,backPlanData);
 	m_backgrTexPlan->InitVB();
@@ -25,9 +27,13 @@ DrawScence::DrawScence(LPDIRECT3DDEVICE9 pD3DDevice,HWND hWnd)
 	sudokuPlanData.anchorPoint = CPoint(200.0f,200.0f);
 	sudokuPlanData.height = 100.0f;
 	sudokuPlanData.width = 100.0f;
+	sudokuPlanData.offsetX = 0.0f;
+	sudokuPlanData.offsetY = 0.0f;
 	
 	//文字精灵对象的创建
-	m_sprite = new Sprite(m_pD3DDevice);
+	m_sprite = new Sprite(m_pD3DDevice,"pic\\back.bmp",D3DCOLOR_XRGB(255,255,255));
+
+	m_DragFlag = 0;
 }
 
 
@@ -81,7 +87,7 @@ void DrawScence::ProjCoorTransform()
 	m_clickPointProj.y = (((-2.0f * m_clickPoint.y)/vp.Height) + 1.0f)/mProj(1,1);;
 	m_clickPointProj.z = 1;
 
-	
+	/*
 	CString str;
 	str.AppendFormat("%f,%f",m_movePointProj.x,m_movePointProj.y);
 	m_sprite->PrintText(str.GetString(),100,200);
@@ -89,6 +95,49 @@ void DrawScence::ProjCoorTransform()
 	CString str1;
 	str1.AppendFormat("%d,%d",m_clickPoint.x,m_clickPoint.y);
 	m_sprite->PrintText(str1.GetString(),100,300);
+	*/
+}
+
+void DrawScence::ScreenPointToProjPoint(CPoint point)
+{
+	
+}
+
+bool DrawScence::UpdateUVData(){
+	if (m_clickPoint.x == -1 || m_clickPoint.y == -1)
+	{
+		return false;
+	}
+	else
+	{
+		D3DVIEWPORT9 vp;
+		m_pD3DDevice->GetViewport(&vp);
+
+		D3DXMATRIX mProj;
+		m_pD3DDevice->GetTransform(D3DTS_PROJECTION,&mProj);
+
+		float luPointX = (((2.0f * sudokuPlanData.anchorPoint.x)/vp.Width) - 1.0f)/mProj(0,0) * fabs(m_Camera.g_vPos.z);
+		float luPointY = (((-2.0f * (sudokuPlanData.anchorPoint.y))/vp.Height) + 1.0f)/mProj(1,1) * fabs(m_Camera.g_vPos.z);
+
+		float rdPointX = (((2.0f * (sudokuPlanData.anchorPoint.x + sudokuPlanData.width))/vp.Width) - 1.0f)/mProj(0,0) * fabs(m_Camera.g_vPos.z);
+		float rdPointY = (((-2.0f * (sudokuPlanData.anchorPoint.y + sudokuPlanData.height))/vp.Height) + 1.0f)/mProj(1,1) * fabs(m_Camera.g_vPos.z);
+
+		sudokuPlanData.uLUX = 1.0f * (luPointX - float(m_backgrTexPlan->m_planeData.anchorPoint.x)) / m_backgrTexPlan->m_planeData.width;
+		sudokuPlanData.uLUY = 1.0f * (luPointY - float(m_backgrTexPlan->m_planeData.anchorPoint.y)) / m_backgrTexPlan->m_planeData.height;
+
+		sudokuPlanData.vRDX = 1.0f * (rdPointX - float(m_backgrTexPlan->m_planeData.anchorPoint.x)) / m_backgrTexPlan->m_planeData.width;
+		sudokuPlanData.vRDY = 1.0f * (rdPointY - float(m_backgrTexPlan->m_planeData.anchorPoint.y)) / m_backgrTexPlan->m_planeData.height;
+
+		CString str;
+		str.AppendFormat("%f,%f\n",sudokuPlanData.uLUX,sudokuPlanData.uLUY);
+		str.AppendFormat("%f,%f",sudokuPlanData.vRDX,sudokuPlanData.vRDY);
+
+		m_sprite->PrintText(str.GetString(),100,100);
+
+		return true;
+	}
+
+	return false;
 }
 
 bool DrawScence::IsPointInPlan(PlaneData planData)
@@ -96,61 +145,68 @@ bool DrawScence::IsPointInPlan(PlaneData planData)
 	
 	if (m_clickPoint.x != -1 || m_clickPoint.y != -1)
 	{
-		if (planData.anchorPoint.x < m_movePoint.x && 
-			planData.anchorPoint.x + planData.width > m_movePoint.x && 
-			planData.anchorPoint.y < m_movePoint.y && 
-			planData.anchorPoint.y + planData.height > m_movePoint.y)
+		if (planData.anchorPoint.x + sudokuPlanData.offsetX < m_movePoint.x && 
+			planData.anchorPoint.x + sudokuPlanData.offsetX + planData.width > m_movePoint.x && 
+			planData.anchorPoint.y + sudokuPlanData.offsetY < m_movePoint.y && 
+			planData.anchorPoint.y + sudokuPlanData.offsetY + planData.height > m_movePoint.y)
 		{
-			Beep(2000,200);
+			sudokuPlanData.offsetX = m_movePoint.x - m_clickPoint.x;
+			sudokuPlanData.offsetY = m_movePoint.y - m_clickPoint.y;
+			m_DragFlag  =1;
 			return true;
 		}
-	}
-	
-
-	return false;
-}
-
-/*
-bool DrawScence::isPointInPlane(Plane *plane)
-{
-	
-	if (m_clickPoint.x != -1)
-	{
-		if ((m_clickPointProj.x * fabs(m_Camera.g_vPos.z) > plane->m_planeData.anchorPoint.x) &&
-			(m_clickPointProj.x * fabs(m_Camera.g_vPos.z) < plane->m_planeData.anchorPoint.x + plane->m_planeData.width) &&
-			(m_clickPointProj.y * fabs(m_Camera.g_vPos.z) > plane->m_planeData.anchorPoint.y) &&
-			(m_clickPointProj.y * fabs(m_Camera.g_vPos.z) < plane->m_planeData.anchorPoint.y + plane->m_planeData.height)
-			)
+		if (m_DragFlag)
 		{
-
+			sudokuPlanData.offsetX = m_movePoint.x - m_clickPoint.x;
+			sudokuPlanData.offsetY = m_movePoint.y - m_clickPoint.y;
 		}
-		
+
 
 	}
+	else
+	{
+		sudokuPlanData.anchorPoint.x += sudokuPlanData.offsetX;
+		sudokuPlanData.anchorPoint.y += sudokuPlanData.offsetY;
+
+		sudokuPlanData.offsetX = 0;
+		sudokuPlanData.offsetY = 0;
+
+		m_DragFlag = 0;
+
+		return false;
+	}
+	
 
 	return false;
 }
-*/
+
 
 void DrawScence::Render(CPoint movePoint,CPoint clickPoint)
 {
 	m_clickPoint = clickPoint;
 	m_movePoint = movePoint;
 
-
+	/*
 	CString str;
 	str.AppendFormat("%d,%d",m_movePoint.x,m_movePoint.y);
 	m_sprite->PrintText(str.GetString(),100,100);
-
-	m_sprite->PrintSprite("pic\\back.bmp",sudokuPlanData.anchorPoint.x,sudokuPlanData.anchorPoint.y,sudokuPlanData.width,sudokuPlanData.height,D3DCOLOR_XRGB(255,255,255));
+	*/
 
 
 	SetWorldMatrix();
 	SetViewProjectionMatrix();
 
-	ProjCoorTransform();
+	//ProjCoorTransform();
 
 	IsPointInPlan(sudokuPlanData);
+	UpdateUVData();
+
+	m_sprite->PrintSprite("pic\\back.bmp",
+						   sudokuPlanData.anchorPoint.x + sudokuPlanData.offsetX,
+						   sudokuPlanData.anchorPoint.y + sudokuPlanData.offsetY,
+						   sudokuPlanData.width,
+						   sudokuPlanData.height,
+						   D3DCOLOR_XRGB(255,255,255));
 
 	m_pD3DDevice->SetTextureStageState(0,D3DTSS_ALPHAARG1,D3DTA_DIFFUSE);
 

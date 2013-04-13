@@ -128,7 +128,7 @@ void CUIEditorView::OnInitialUpdate()
 	m_pD3DInit->GameInit();
 
 	m_clickPoint = CPoint(-1,-1);
-	this->SetTimer(1,50,0);
+	this->SetTimer(1,100,0);
 }
 
 

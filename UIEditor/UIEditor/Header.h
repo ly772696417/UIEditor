@@ -25,6 +25,11 @@ typedef struct PlaneData
 	float width;
 	float height;
 	float alpha;
+	float offsetX;
+	float offsetY;
+
+	float uLUX,uLUY;//左上角点的uv
+	float vRDX,vRDY;//右下角点的uv
 
 	PlaneData& operator=(const PlaneData& rhs)
 	{
@@ -34,6 +39,12 @@ typedef struct PlaneData
 		width = rhs.width;
 		height = rhs.height;
 		alpha = rhs.alpha;
+
+		uLUX = rhs.uLUX;
+		uLUY = rhs.uLUY;
+
+		vRDX = rhs.vRDX;
+		vRDY = rhs.vRDY;
 
 		return *this;
 	}

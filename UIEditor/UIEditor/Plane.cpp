@@ -22,10 +22,10 @@ HRESULT Plane::InitVB()
 	
 	PLANEVERTEX Vertices[] = 
 	{
-		{m_planeData.anchorPoint.x,					   m_planeData.anchorPoint.y,0.0f,					   D3DXCOLOR(1.0f,1.0f,1.0f,m_planeData.alpha),0.0f,1.0f},
-		{m_planeData.anchorPoint.x,					   m_planeData.anchorPoint.y + m_planeData.height,0.0f,D3DXCOLOR(1.0f,1.0f,1.0f,m_planeData.alpha),0.0f,0.0f},
-		{m_planeData.anchorPoint.x + m_planeData.width,m_planeData.anchorPoint.y,0.0f,					   D3DXCOLOR(1.0f,1.0f,1.0f,m_planeData.alpha),1.0f,1.0f},
-		{m_planeData.anchorPoint.x + m_planeData.width,m_planeData.anchorPoint.y + m_planeData.height,0.0f,D3DXCOLOR(1.0f,1.0f,1.0f,m_planeData.alpha),1.0f,0.0f}
+		{m_planeData.anchorPoint.x,					   m_planeData.anchorPoint.y - m_planeData.height,0.0f, D3DXCOLOR(1.0f,1.0f,1.0f,m_planeData.alpha),0.0f,1.0f},
+		{m_planeData.anchorPoint.x,					   m_planeData.anchorPoint.y ,0.0f,						D3DXCOLOR(1.0f,1.0f,1.0f,m_planeData.alpha),0.0f,0.0f},
+		{m_planeData.anchorPoint.x + m_planeData.width,m_planeData.anchorPoint.y - m_planeData.height,0.0f, D3DXCOLOR(1.0f,1.0f,1.0f,m_planeData.alpha),1.0f,1.0f},
+		{m_planeData.anchorPoint.x + m_planeData.width,m_planeData.anchorPoint.y ,0.0f,						D3DXCOLOR(1.0f,1.0f,1.0f,m_planeData.alpha),1.0f,0.0f}
 	};
 	
 	

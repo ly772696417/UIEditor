@@ -10,6 +10,7 @@ class Sprite
 {
 public:
 	Sprite(LPDIRECT3DDEVICE9 pD3DDevice);
+	Sprite(LPDIRECT3DDEVICE9 pD3DDevice,string filename, D3DCOLOR transcolor);
 	~Sprite(void);
 
 	void PrintText(string text,int x,int y,string font = "Arial Bold",int fontSize = 30,D3DCOLOR color = D3DCOLOR_XRGB(0,255,0));

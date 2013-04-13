@@ -8,6 +8,14 @@ Sprite::Sprite(LPDIRECT3DDEVICE9 pD3DDevice)
 	D3DXCreateSprite(m_pD3DDevice,&spriteobj);
 }
 
+Sprite::Sprite(LPDIRECT3DDEVICE9 pD3DDevice,string filename, D3DCOLOR transcolor)
+{
+	m_pD3DDevice = pD3DDevice;
+	D3DXCreateSprite(m_pD3DDevice,&spriteobj);
+
+	m_texture = this->LoadTexture(filename,transcolor);
+}
+
 
 Sprite::~Sprite(void)
 {
@@ -24,7 +32,7 @@ void Sprite::PrintText(string text,int x,int y,string font /* = "Arial Bold" */,
 
 void Sprite::PrintSprite(string filename,int x,int y,int width,int height,D3DCOLOR transcolor)
 {
-	m_texture = this->LoadTexture(filename,transcolor);
+	//m_texture = this->LoadTexture(filename,transcolor);
 	spriteobj->Begin(D3DXSPRITE_ALPHABLEND);
 	this->Sprite_Transform_Draw(m_texture,x,y,width,height);
 	spriteobj->End();
